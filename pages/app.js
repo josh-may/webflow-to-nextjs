@@ -10,9 +10,11 @@ export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("darkMode");
-    if (saved !== null) {
-      setIsDarkMode(JSON.parse(saved));
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("darkMode");
+      if (saved !== null) {
+        setIsDarkMode(JSON.parse(saved));
+      }
     }
   }, []);
 
@@ -50,7 +52,9 @@ export default function Home() {
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
-    localStorage.setItem("darkMode", JSON.stringify(newMode));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("darkMode", JSON.stringify(newMode));
+    }
   };
 
   return (
