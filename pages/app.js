@@ -1,5 +1,5 @@
 // pages/index.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 
@@ -7,6 +7,14 @@ export default function Home() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [generatedCode, setGeneratedCode] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("darkMode");
+    if (saved !== null) {
+      setIsDarkMode(JSON.parse(saved));
+    }
+  }, []);
 
   const handleConvert = async () => {
     if (!url) return;
@@ -39,31 +47,74 @@ export default function Home() {
     setIsLoading(false);
   };
 
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem("darkMode", JSON.stringify(newMode));
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-200">
+    <div
+      className={`min-h-screen flex flex-col ${
+        isDarkMode ? "bg-gray-900" : "bg-gray-200"
+      }`}
+    >
       <Head>
         <title>Webflow to Next.js Converter</title>
       </Head>
 
       <div className="max-w-6xl min-w-6xl mx-auto w-full">
         {/* Header */}
-        <header className="border-2 border-gray-400 rounded-md p-4 mb-3 mt-4">
+        <header
+          className={`border-2 ${
+            isDarkMode ? "border-gray-700" : "border-gray-400"
+          } rounded-md p-4 mb-3 mt-4`}
+        >
           <div className="flex justify-between items-center">
             <Link href="/" className="text-xl font-bold text-blue-600">
               Webflow to Next.js
             </Link>
-            <nav className="flex space-x-8">
-              <Link href="/" className="text-gray-600 hover:text-blue-600">
+            <nav className="flex space-x-8 items-center">
+              <Link
+                href="/"
+                className={`${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                } hover:text-blue-600`}
+              >
                 Home
               </Link>
+              <button
+                onClick={toggleDarkMode}
+                className={`p-2 rounded-md ${
+                  isDarkMode
+                    ? "bg-gray-700 text-yellow-300"
+                    : "bg-gray-300 text-gray-700"
+                }`}
+              >
+                {isDarkMode ? "🌙" : "☀️"}
+              </button>
             </nav>
           </div>
         </header>
 
         {/* Main Content */}
-        <div className="border-2 border-gray-400 rounded-md p-8 mb-3 text-center space-y-5">
-          <h1 className="text-4xl font-bold">Webflow to Next.js Converter</h1>
-          <p className="text-gray-600 mb-6 max-w-3xl mx-auto">
+        <div
+          className={`border-2 ${
+            isDarkMode ? "border-gray-700" : "border-gray-400"
+          } rounded-md p-8 mb-3 text-center space-y-5`}
+        >
+          <h1
+            className={`text-4xl font-bold ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            Webflow to Next.js Converter
+          </h1>
+          <p
+            className={`${
+              isDarkMode ? "text-gray-300" : "text-gray-600"
+            } mb-6 max-w-3xl mx-auto`}
+          >
             Convert your Webflow website into Next.js code with Tailwind CSS
             styling. Simply paste your Webflow website URL below and click
             &apos;Convert&apos; to generate the Next.js code for your project.
@@ -72,7 +123,11 @@ export default function Home() {
           <div className="flex space-x-2 max-w-2xl mx-auto">
             <input
               type="text"
-              className="w-full border-2 border-gray-400 rounded-md px-4 py-2 focus:outline-none focus:border-blue-600"
+              className={`w-full border-2 ${
+                isDarkMode
+                  ? "border-gray-700 bg-gray-800 text-white"
+                  : "border-gray-400 bg-white text-gray-900"
+              } rounded-md px-4 py-2 focus:outline-none focus:border-blue-600`}
               placeholder="Enter Webflow URL"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
@@ -88,8 +143,20 @@ export default function Home() {
 
           {generatedCode && (
             <div className="text-left mt-10 space-y-4">
-              <h2 className="text-2xl font-bold">Generated Next.js Code:</h2>
-              <pre className="bg-white p-6 rounded-md border-2 border-gray-400 overflow-auto whitespace-pre-wrap">
+              <h2
+                className={`text-2xl font-bold ${
+                  isDarkMode ? "text-white" : "text-gray-900"
+                }`}
+              >
+                Generated Next.js Code:
+              </h2>
+              <pre
+                className={`p-6 rounded-md border-2 ${
+                  isDarkMode
+                    ? "bg-gray-800 border-gray-700 text-gray-300"
+                    : "bg-white border-gray-400 text-gray-900"
+                } overflow-auto whitespace-pre-wrap`}
+              >
                 {generatedCode}
               </pre>
             </div>

@@ -7,28 +7,61 @@ export default function Home() {
   const [openFAQs, setOpenFAQs] = useState({});
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Initialize dark mode from localStorage on component mount
+  useState(() => {
+    const darkModePreference = localStorage.getItem("darkMode");
+    if (darkModePreference !== null) {
+      setIsDarkMode(darkModePreference === "true");
+    }
+  }, []);
+
+  // Update localStorage and apply dark mode class when preference changes
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    localStorage.setItem("darkMode", newDarkMode.toString());
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-200">
+    <div
+      className={`min-h-screen flex flex-col ${
+        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-200 text-black"
+      }`}
+    >
       <div className="max-w-6xl min-w-6xl mx-auto w-full">
         {/* Header */}
-        <header className="border-2 border-gray-400 rounded-md p-4 mb-3 mt-4">
+        <header
+          className={`border-2 ${
+            isDarkMode ? "border-gray-700" : "border-gray-400"
+          } rounded-md p-4 mb-3 mt-4`}
+        >
           <div className="flex justify-between items-center">
             <Link href="/" className="text-xl font-bold text-blue-600">
               Webflow to Next.js
             </Link>
-            <nav className="hidden sm:flex space-x-8">
+            <nav className="hidden sm:flex space-x-8 items-center">
               {["Features", "Pricing"].map((item) => (
                 <Link
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className="text-gray-600 hover:text-blue-600"
+                  className={`${
+                    isDarkMode
+                      ? "text-gray-300 hover:text-blue-400"
+                      : "text-gray-600 hover:text-blue-600"
+                  }`}
                 >
                   {item}
                 </Link>
               ))}
               <button
                 onClick={() => setIsAboutModalOpen(true)}
-                className="text-gray-600 hover:text-blue-600"
+                className={`${
+                  isDarkMode
+                    ? "text-gray-300 hover:text-blue-400"
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
               >
                 About
               </button>
@@ -38,7 +71,11 @@ export default function Home() {
                   e.preventDefault();
                   setIsContactModalOpen(true);
                 }}
-                className="text-gray-600 hover:text-blue-600"
+                className={`${
+                  isDarkMode
+                    ? "text-gray-300 hover:text-blue-400"
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
               >
                 Contact
               </Link>
@@ -56,7 +93,11 @@ export default function Home() {
                 <Link
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className="block py-2 text-gray-600 hover:text-blue-600"
+                  className={`block py-2 ${
+                    isDarkMode
+                      ? "text-gray-300 hover:text-blue-400"
+                      : "text-gray-600 hover:text-blue-600"
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item}
@@ -67,7 +108,11 @@ export default function Home() {
                   setMobileMenuOpen(false);
                   setIsAboutModalOpen(true);
                 }}
-                className="block w-full text-left py-2 text-gray-600 hover:text-blue-600"
+                className={`block w-full text-left py-2 ${
+                  isDarkMode
+                    ? "text-gray-300 hover:text-blue-400"
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
               >
                 About
               </button>
@@ -78,7 +123,11 @@ export default function Home() {
                   setMobileMenuOpen(false);
                   setIsContactModalOpen(true);
                 }}
-                className="block py-2 text-gray-600 hover:text-blue-600"
+                className={`block py-2 ${
+                  isDarkMode
+                    ? "text-gray-300 hover:text-blue-400"
+                    : "text-gray-600 hover:text-blue-600"
+                }`}
               >
                 Contact
               </Link>
@@ -88,11 +137,19 @@ export default function Home() {
 
         <main>
           {/* Hero */}
-          <section className="border-2 border-gray-400 rounded-md p-8 mb-3 text-center">
+          <section
+            className={`border-2 ${
+              isDarkMode ? "border-gray-700" : "border-gray-400"
+            } rounded-md p-8 mb-3 text-center`}
+          >
             <h1 className="text-4xl font-bold mb-4">
               Convert Webflow to Next.js in Seconds
             </h1>
-            <p className="text-xl mb-3 text-gray-600">
+            <p
+              className={`text-xl mb-3 ${
+                isDarkMode ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
               Transform your Webflow projects into powerful Next.js applications
               with our automated conversion tool. Get clean, optimized code that
               maintains your design while unlocking the full potential of
@@ -109,7 +166,9 @@ export default function Home() {
           {/* Features */}
           <section
             id="features"
-            className="border-2 border-gray-400 rounded-md p-8 mb-3"
+            className={`border-2 ${
+              isDarkMode ? "border-gray-700" : "border-gray-400"
+            } rounded-md p-8 mb-3`}
           >
             <h2 className="text-3xl font-bold mb-6 text-center">
               Key Features
@@ -143,11 +202,15 @@ export default function Home() {
               ].map((feature) => (
                 <div
                   key={feature.title}
-                  className="p-6 border-2 border-gray-400 rounded-lg"
+                  className={`p-6 border-2 ${
+                    isDarkMode ? "border-gray-700" : "border-gray-400"
+                  } rounded-lg`}
                 >
                   <div className="text-3xl mb-3">{feature.icon}</div>
                   <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
+                    {feature.description}
+                  </p>
                 </div>
               ))}
             </div>
@@ -157,13 +220,19 @@ export default function Home() {
           {/* Pricing */}
           <section
             id="pricing"
-            className="border-2 border-gray-400 rounded-md p-8 mb-3"
+            className={`border-2 ${
+              isDarkMode ? "border-gray-700" : "border-gray-400"
+            } rounded-md p-8 mb-3`}
           >
             <h2 className="text-3xl font-bold mb-8 text-center">
               Simple Pricing
             </h2>
             <div className="flex flex-col md:flex-row gap-8 justify-center max-w-4xl mx-auto">
-              <div className="flex-1 border-2 rounded-lg p-8 border-blue-600 shadow-lg  relative">
+              <div
+                className={`flex-1 border-2 rounded-lg p-8 border-blue-600 shadow-lg relative ${
+                  isDarkMode ? "bg-gray-800" : ""
+                }`}
+              >
                 <div className="absolute -top-4 right-4 bg-blue-600 text-white px-4 py-1 rounded-full text-sm">
                   Most Popular
                 </div>
@@ -173,7 +242,11 @@ export default function Home() {
                   <p className="text-blue-600 font-bold text-xl bg-yellow-100 mb-2 inline-block px-4 py-1 rounded-full">
                     One-time payment
                   </p>
-                  <p className="text-gray-600 mt-2">
+                  <p
+                    className={
+                      isDarkMode ? "text-gray-300 mt-2" : "text-gray-600 mt-2"
+                    }
+                  >
                     Perfect for landing pages and simple websites
                   </p>
                 </div>
@@ -187,7 +260,9 @@ export default function Home() {
                   ].map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-center text-gray-600"
+                      className={`flex items-center ${
+                        isDarkMode ? "text-gray-300" : "text-gray-600"
+                      }`}
                     >
                       <svg
                         className="w-5 h-5 mr-2 text-green-500"
@@ -215,7 +290,13 @@ export default function Home() {
                 </a>
               </div>
 
-              <div className="flex-1 border-2 rounded-lg p-8 border-gray-400 shadow-sm ">
+              <div
+                className={`flex-1 border-2 rounded-lg p-8 ${
+                  isDarkMode
+                    ? "border-gray-700 bg-gray-800"
+                    : "border-gray-400 "
+                } shadow-sm`}
+              >
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold mb-2">Multiple Pages</h3>
                   <p className="text-4xl font-bold mb-4 text-blue-600">
@@ -224,7 +305,11 @@ export default function Home() {
                   <p className="text-blue-600 font-bold text-xl bg-yellow-100 mb-2 inline-block px-4 py-1 rounded-full">
                     One-time payment
                   </p>
-                  <p className="text-gray-600 mt-2">
+                  <p
+                    className={
+                      isDarkMode ? "text-gray-300 mt-2" : "text-gray-600 mt-2"
+                    }
+                  >
                     For larger websites and complex projects
                   </p>
                 </div>
@@ -240,7 +325,9 @@ export default function Home() {
                   ].map((feature) => (
                     <li
                       key={feature}
-                      className="flex items-center text-gray-600"
+                      className={`flex items-center ${
+                        isDarkMode ? "text-gray-300" : "text-gray-600"
+                      }`}
                     >
                       <svg
                         className="w-5 h-5 mr-2 text-green-500"
@@ -274,7 +361,9 @@ export default function Home() {
           {/* Testimonials */}
           <section
             id="testimonials"
-            className="border-2 border-gray-400 rounded-md p-8 mb-3"
+            className={`border-2 ${
+              isDarkMode ? "border-gray-700" : "border-gray-400"
+            } rounded-md p-8 mb-3`}
           >
             <h2 className="text-3xl font-bold mb-6 text-center">
               Testimonials
@@ -308,7 +397,9 @@ export default function Home() {
               ].map((testimonial, index) => (
                 <div
                   key={index}
-                  className="p-6 border-2 border-gray-400 rounded-lg"
+                  className={`p-6 border-2 ${
+                    isDarkMode ? "border-gray-700" : "border-gray-400"
+                  } rounded-lg`}
                 >
                   {testimonial.image && (
                     <div className="w-24 h-24 mx-auto mb-4 relative">
@@ -320,10 +411,18 @@ export default function Home() {
                       />
                     </div>
                   )}
-                  <p className="text-lg italic mb-4 text-gray-600">
+                  <p
+                    className={`text-lg italic mb-4 ${
+                      isDarkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
                     {testimonial.quote}
                   </p>
-                  <p className="text-gray-600 font-semibold">
+                  <p
+                    className={`${
+                      isDarkMode ? "text-gray-300" : "text-gray-600"
+                    } font-semibold`}
+                  >
                     {testimonial.author}
                   </p>
                 </div>
@@ -335,7 +434,9 @@ export default function Home() {
           {/* FAQs */}
           <section
             id="faq"
-            className="border-2 border-gray-400 rounded-md p-8 mb-3"
+            className={`border-2 ${
+              isDarkMode ? "border-gray-700" : "border-gray-400"
+            } rounded-md p-8 mb-3`}
           >
             <h2 className="text-3xl font-bold mb-6 text-center">
               Frequently Asked Questions
@@ -405,7 +506,9 @@ export default function Home() {
                 return (
                   <div
                     key={index}
-                    className="border-2 border-gray-400 rounded-lg overflow-hidden"
+                    className={`border-2 ${
+                      isDarkMode ? "border-gray-700" : "border-gray-400"
+                    } rounded-lg overflow-hidden`}
                   >
                     <button
                       onClick={() =>
@@ -440,7 +543,13 @@ export default function Home() {
                           : "max-h-0 opacity-0"
                       }`}
                     >
-                      <p className="px-6 pb-6 text-gray-600">{faq.answer}</p>
+                      <p
+                        className={`px-6 pb-6 ${
+                          isDarkMode ? "text-gray-300" : "text-gray-600"
+                        }`}
+                      >
+                        {faq.answer}
+                      </p>
                     </div>
                   </div>
                 );
@@ -450,26 +559,46 @@ export default function Home() {
           {/*  */}
         </main>
 
-        <footer className="border-2 border-gray-400 rounded-md p-4 text-center mb-6">
-          <p>
-            &copy; {new Date().getFullYear()} Webflow to Next.js Converter |{" "}
-            Created by&nbsp;
-            <a
-              href="https://www.joshmmay.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600"
+        <footer
+          className={`border-2 ${
+            isDarkMode ? "border-gray-700" : "border-gray-400"
+          } rounded-md p-4 text-center mb-6`}
+        >
+          <div className="flex justify-center items-center gap-4">
+            <p>
+              &copy; {new Date().getFullYear()} Webflow to Next.js Converter |{" "}
+              Created by&nbsp;
+              <a
+                href="https://www.joshmmay.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600"
+              >
+                Josh May
+              </a>
+            </p>
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-md ${
+                isDarkMode
+                  ? "bg-gray-700 text-yellow-300"
+                  : "bg-gray-300 text-gray-700"
+              }`}
             >
-              Josh May
-            </a>
-          </p>
+              {isDarkMode ? "☀️" : "🌙"}
+            </button>
+          </div>
         </footer>
       </div>
 
       {/* Add the modal */}
       {isAboutModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg max-w-md relative">
+          <div
+            className={`${
+              isDarkMode ? "bg-gray-800" : ""
+            } p-8 rounded-lg max-w-md relative`}
+          >
             <button
               onClick={() => setIsAboutModalOpen(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -489,7 +618,7 @@ export default function Home() {
               </svg>
             </button>
             <h2 className="text-2xl font-bold mb-4">About This Project</h2>
-            <p className="text-gray-600">
+            <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
               I built this tool to scratch my own itch. I was trying to convert
               a client&apos;s product page from Webflow to Next.js and
               couldn&apos;t find anything great so... Walaaa! 😊
@@ -510,7 +639,11 @@ export default function Home() {
 
       {isContactModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg max-w-md relative">
+          <div
+            className={`${
+              isDarkMode ? "bg-gray-800" : ""
+            } p-8 rounded-lg max-w-md relative`}
+          >
             <button
               onClick={() => setIsContactModalOpen(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -530,7 +663,7 @@ export default function Home() {
               </svg>
             </button>
             <h2 className="text-2xl font-bold mb-4">Contact Me</h2>
-            <p className="text-gray-600">
+            <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
               You can reach me at:{" "}
               <a
                 href="mailto:hey@joshmmay.com"
