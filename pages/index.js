@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -9,19 +9,22 @@ export default function Home() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Initialize dark mode from localStorage on component mount
-  useState(() => {
+  // Replace useState with useEffect for localStorage
+  useEffect(() => {
+    // Only access localStorage after component mounts in browser
     const darkModePreference = localStorage.getItem("darkMode");
     if (darkModePreference !== null) {
       setIsDarkMode(darkModePreference === "true");
     }
   }, []);
 
-  // Update localStorage and apply dark mode class when preference changes
   const toggleDarkMode = () => {
     const newDarkMode = !isDarkMode;
     setIsDarkMode(newDarkMode);
-    localStorage.setItem("darkMode", newDarkMode.toString());
+    // Only access localStorage in browser environment
+    if (typeof window !== "undefined") {
+      localStorage.setItem("darkMode", newDarkMode.toString());
+    }
   };
 
   return (
