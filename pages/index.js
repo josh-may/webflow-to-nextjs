@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useEffect } from "react";
 
 export default function Home() {
@@ -8,10 +7,13 @@ export default function Home() {
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [webflowUrl, setWebflowUrl] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [submitModalStep, setSubmitModalStep] = useState(1);
 
-  // Replace useState with useEffect for localStorage
   useEffect(() => {
-    // Only access localStorage after component mounts in browser
     const darkModePreference = localStorage.getItem("darkMode");
     if (darkModePreference !== null) {
       setIsDarkMode(darkModePreference === "true");
@@ -21,38 +23,78 @@ export default function Home() {
   const toggleDarkMode = () => {
     const newDarkMode = !isDarkMode;
     setIsDarkMode(newDarkMode);
-    // Only access localStorage in browser environment
     if (typeof window !== "undefined") {
       localStorage.setItem("darkMode", newDarkMode.toString());
+    }
+  };
+
+  const handleConvertClick = (e) => {
+    e.preventDefault();
+    if (!webflowUrl) return;
+    // Enhanced URL validation
+    if (isValidWebflowUrl(webflowUrl)) {
+      setIsSubmitModalOpen(true);
+    } else {
+      alert("Please enter a valid URL");
+    }
+  };
+
+  const isValidWebflowUrl = (url) => {
+    try {
+      // Add https:// if no protocol is specified
+      const urlToCheck = url.startsWith("http") ? url : `https://${url}`;
+      const parsedUrl = new URL(urlToCheck);
+      // Allow any valid URL
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    setSubmitModalStep(2);
+  };
+
+  const handleInputSubmit = (e) => {
+    if (e.key === "Enter" && webflowUrl) {
+      e.preventDefault();
+      if (isValidWebflowUrl(webflowUrl)) {
+        setIsSubmitModalOpen(true);
+      } else {
+        alert("Please enter a valid URL");
+      }
     }
   };
 
   return (
     <div
       className={`min-h-screen flex flex-col ${
-        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-200 text-black"
+        isDarkMode ? "bg-zinc-950 text-white" : "bg-zinc-100 text-black"
       }`}
     >
-      <div className="max-w-6xl min-w-6xl mx-auto w-full">
+      <div className="max-w-7xl min-w-6xl mx-auto w-full">
         {/* Header */}
         <header
           className={`border-2 ${
-            isDarkMode ? "border-gray-700" : "border-gray-400"
-          } rounded-md p-4 mb-3 mt-4`}
+            isDarkMode
+              ? "border-zinc-600 bg-zinc-800"
+              : "border-zinc-300 bg-white"
+          } rounded-sm p-5 mb-3 mt-4 shadow-md`}
         >
           <div className="flex justify-between items-center">
-            <Link href="/" className="text-xl font-bold text-blue-600">
-              Webflow to Next.js
+            <Link href="/" className="text-xl font-bold ">
+              Webflow to Next.js Converter
             </Link>
             <nav className="hidden sm:flex space-x-8 items-center">
-              {["Features", "Pricing"].map((item) => (
+              {["Features"].map((item) => (
                 <Link
                   key={item}
                   href={`#${item.toLowerCase()}`}
                   className={`${
                     isDarkMode
-                      ? "text-gray-300 hover:text-blue-400"
-                      : "text-gray-600 hover:text-blue-600"
+                      ? "text-zinc-300 hover:text-green-400"
+                      : "text-zinc-600 hover:text-green-600"
                   }`}
                 >
                   {item}
@@ -62,8 +104,8 @@ export default function Home() {
                 onClick={() => setIsAboutModalOpen(true)}
                 className={`${
                   isDarkMode
-                    ? "text-gray-300 hover:text-blue-400"
-                    : "text-gray-600 hover:text-blue-600"
+                    ? "text-zinc-300 hover:text-green-400"
+                    : "text-zinc-600 hover:text-green-600"
                 }`}
               >
                 About
@@ -76,8 +118,8 @@ export default function Home() {
                 }}
                 className={`${
                   isDarkMode
-                    ? "text-gray-300 hover:text-blue-400"
-                    : "text-gray-600 hover:text-blue-600"
+                    ? "text-zinc-300 hover:text-green-400"
+                    : "text-zinc-600 hover:text-green-600"
                 }`}
               >
                 Contact
@@ -98,8 +140,8 @@ export default function Home() {
                   href={`#${item.toLowerCase()}`}
                   className={`block py-2 ${
                     isDarkMode
-                      ? "text-gray-300 hover:text-blue-400"
-                      : "text-gray-600 hover:text-blue-600"
+                      ? "text-zinc-300 hover:text-green-400"
+                      : "text-zinc-600 hover:text-green-600"
                   }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -113,8 +155,8 @@ export default function Home() {
                 }}
                 className={`block w-full text-left py-2 ${
                   isDarkMode
-                    ? "text-gray-300 hover:text-blue-400"
-                    : "text-gray-600 hover:text-blue-600"
+                    ? "text-zinc-300 hover:text-green-400"
+                    : "text-zinc-600 hover:text-green-600"
                 }`}
               >
                 About
@@ -128,8 +170,8 @@ export default function Home() {
                 }}
                 className={`block py-2 ${
                   isDarkMode
-                    ? "text-gray-300 hover:text-blue-400"
-                    : "text-gray-600 hover:text-blue-600"
+                    ? "text-zinc-300 hover:text-green-400"
+                    : "text-zinc-600 hover:text-green-600"
                 }`}
               >
                 Contact
@@ -142,292 +184,155 @@ export default function Home() {
           {/* Hero */}
           <section
             className={`border-2 ${
-              isDarkMode ? "border-gray-700" : "border-gray-400"
-            } rounded-md p-8 mb-3 text-center`}
+              isDarkMode
+                ? "border-zinc-600 bg-zinc-800"
+                : "border-zinc-300 bg-white"
+            } rounded-sm p-4 sm:p-8 mb-3 text-center shadow-md`}
           >
-            <h1 className="text-4xl font-bold mb-4">
-              Convert Webflow to Next.js in Seconds
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 mt-3 sm:mt-5 max-w-5xl mx-auto">
+              Webflow to Next.js Converter
             </h1>
             <p
-              className={`text-xl mb-3 ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
+              className={`text-lg sm:text-xl mb-4 sm:mb-5 max-w-4xl mx-auto px-2 sm:px-0 ${
+                isDarkMode ? "text-zinc-300" : "text-zinc-600"
               }`}
             >
-              Transform your Webflow projects into powerful Next.js applications
-              with our automated conversion tool. Get clean, optimized code that
-              maintains your design while unlocking the full potential of
-              Next.js features.
+              Transform your Webflow projects into powerful Next.js
+              applications. Get clean, optimized code that maintains your design
+              while unlocking the full potential of Next.js features.
             </p>
-            <a
-              href="https://buy.stripe.com/dR615ybatepugXCfYY"
-              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-700"
-            >
-              Start Converting
-            </a>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center max-w-2xl mx-auto">
+              <input
+                type="url"
+                value={webflowUrl}
+                onChange={(e) => setWebflowUrl(e.target.value)}
+                onKeyDown={handleInputSubmit}
+                placeholder="Enter your URL"
+                pattern="https:\/\/.*\.webflow\.(io|com).*"
+                required
+                className={`flex-1 w-full sm:w-auto px-4 py-2 sm:py-3 rounded-sm ${
+                  isDarkMode
+                    ? "bg-zinc-900 border-zinc-700 text-white"
+                    : "bg-white border-zinc-300 text-black"
+                } border-2 focus:outline-none focus:border-green-600`}
+              />
+              <button
+                onClick={handleConvertClick}
+                className="w-full sm:w-auto bg-green-700 text-base sm:text-lg text-white px-6 sm:px-8 py-2 sm:py-3 rounded-sm font-semibold hover:bg-green-800"
+              >
+                Convert Now
+              </button>
+            </div>
           </section>
 
           {/* Features */}
           <section
             id="features"
             className={`border-2 ${
-              isDarkMode ? "border-gray-700" : "border-gray-400"
-            } rounded-md p-8 mb-3`}
+              isDarkMode
+                ? "border-zinc-600 bg-zinc-800"
+                : "border-zinc-300 bg-white"
+            } rounded-sm p-8 mb-3 shadow-md`}
           >
-            <h2 className="text-3xl font-bold mb-6 text-center">
-              Key Features
-            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {[
                 {
                   title: "Seamless Conversion",
                   description:
-                    "Convert your Webflow site to Next.js with just a few clicks. No manual coding required.",
+                    "Convert your Webflow site to Next.js with just a few clicks. Our automated process handles all the heavy lifting while maintaining your site's functionality.",
                   icon: "🔄",
+                  benefits: [
+                    "Automated conversion process",
+                    "Preserves all functionality",
+                    "Quick turnaround time",
+                  ],
                 },
                 {
                   title: "Design Fidelity",
                   description:
-                    "Maintain pixel-perfect design accuracy during conversion. Your site will look exactly the same.",
+                    "Maintain pixel-perfect design accuracy during conversion. Every animation, interaction, and styling detail is meticulously preserved.",
                   icon: "🎨",
+                  benefits: [
+                    "Exact visual match",
+                    "Preserved animations",
+                    "Responsive layouts",
+                  ],
                 },
                 {
-                  title: "Performance Boost",
+                  title: "Performance Optimization",
                   description:
-                    "Leverage Next.js optimization features for faster loading times and better SEO.",
+                    "Leverage Next.js's powerful features for significantly faster loading times, improved Core Web Vitals, and better SEO rankings.",
                   icon: "⚡",
+                  benefits: [
+                    "Faster page loads",
+                    "Better Core Web Vitals",
+                    "Improved SEO scores",
+                  ],
                 },
                 {
-                  title: "React Integration",
+                  title: "Next.js Architecture",
                   description:
-                    "Get clean, component-based React code that's easy to maintain and extend.",
+                    "Get clean, modular Next.js code following best practices. Easily maintain and extend your site with modern development workflows.",
                   icon: "⚛️",
+                  benefits: [
+                    "Component-based structure",
+                    "Modern Next.js patterns",
+                    "Extensible codebase",
+                  ],
+                },
+                {
+                  title: "SEO Enhancement",
+                  description:
+                    "Boost your search engine rankings with Next.js-optimized code and improved performance metrics.",
+                  icon: "🎯",
+                  benefits: [
+                    "Meta tag optimization",
+                    "Fast loading times",
+                    "Search engine friendly",
+                  ],
+                },
+                {
+                  title: "Developer Experience",
+                  description:
+                    "Work with clean, well-documented code that follows Next.js best practices and modern development standards.",
+                  icon: "👨‍💻",
+                  benefits: [
+                    "Clean code structure",
+                    "Detailed documentation",
+                    "Industry best practices",
+                  ],
                 },
               ].map((feature) => (
                 <div
                   key={feature.title}
                   className={`p-6 border-2 ${
-                    isDarkMode ? "border-gray-700" : "border-gray-400"
-                  } rounded-lg`}
+                    isDarkMode
+                      ? "border-zinc-700 bg-zinc-900"
+                      : "border-zinc-300 bg-zinc-50"
+                  } rounded-lg shadow-md`}
                 >
-                  <div className="text-3xl mb-3">{feature.icon}</div>
-                  <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                  <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
-                    {feature.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-          {/*  */}
-
-          {/* Pricing */}
-          <section
-            id="pricing"
-            className={`border-2 ${
-              isDarkMode ? "border-gray-700" : "border-gray-400"
-            } rounded-md p-8 mb-3`}
-          >
-            <h2 className="text-3xl font-bold mb-8 text-center">
-              Simple Pricing
-            </h2>
-            <div className="flex flex-col md:flex-row gap-8 justify-center max-w-4xl mx-auto">
-              <div
-                className={`flex-1 border-2 rounded-lg p-8 border-blue-600 shadow-lg relative ${
-                  isDarkMode ? "bg-gray-800" : ""
-                }`}
-              >
-                <div className="absolute -top-4 right-4 bg-blue-600 text-white px-4 py-1 rounded-full text-sm">
-                  Most Popular
-                </div>
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold mb-2">Single Page</h3>
-                  <p className="text-4xl font-bold mb-4 text-blue-600">$50</p>
-                  <p className="text-blue-600 font-bold text-xl bg-yellow-100 mb-2 inline-block px-4 py-1 rounded-full">
-                    One-time payment
-                  </p>
-                  <p
-                    className={
-                      isDarkMode ? "text-gray-300 mt-2" : "text-gray-600 mt-2"
-                    }
-                  >
-                    Perfect for landing pages and simple websites
-                  </p>
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  {[
-                    "One page conversion",
-                    "Mobile responsiveness",
-                    "SEO optimization",
-                    "Fast delivery (5-10 minutes)",
-                  ].map((feature) => (
-                    <li
-                      key={feature}
-                      className={`flex items-center ${
-                        isDarkMode ? "text-gray-300" : "text-gray-600"
-                      }`}
-                    >
-                      <svg
-                        className="w-5 h-5 mr-2 text-green-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <a
-                  href="https://buy.stripe.com/dR615ybatepugXCfYY"
-                  className="block w-full bg-blue-600 text-white text-center px-6 py-3 rounded-md hover:bg-blue-700 transition-colors font-semibold"
-                >
-                  Get Started
-                </a>
-              </div>
-
-              <div
-                className={`flex-1 border-2 rounded-lg p-8 ${
-                  isDarkMode
-                    ? "border-gray-700 bg-gray-800"
-                    : "border-gray-400 "
-                } shadow-sm`}
-              >
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold mb-2">Multiple Pages</h3>
-                  <p className="text-4xl font-bold mb-4 text-blue-600">
-                    Custom
-                  </p>
-                  <p className="text-blue-600 font-bold text-xl bg-yellow-100 mb-2 inline-block px-4 py-1 rounded-full">
-                    One-time payment
-                  </p>
-                  <p
-                    className={
-                      isDarkMode ? "text-gray-300 mt-2" : "text-gray-600 mt-2"
-                    }
-                  >
-                    For larger websites and complex projects
-                  </p>
-                </div>
-
-                <ul className="space-y-3 mb-8">
-                  {[
-                    "Multiple page conversion",
-                    "Mobile responsiveness",
-                    "Advanced SEO optimization",
-                    "Priority delivery",
-                    "Technical consultation",
-                    "Performance optimization",
-                  ].map((feature) => (
-                    <li
-                      key={feature}
-                      className={`flex items-center ${
-                        isDarkMode ? "text-gray-300" : "text-gray-600"
-                      }`}
-                    >
-                      <svg
-                        className="w-5 h-5 mr-2 text-green-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <a
-                  href="https://forms.gle/pU4meTYcVE51iHkr7"
-                  className="block w-full bg-blue-600 text-white text-center px-6 py-3 rounded-md hover:bg-blue-700 transition-colors font-semibold"
-                >
-                  Contact Us
-                </a>
-              </div>
-            </div>
-          </section>
-          {/*  */}
-
-          {/* Testimonials */}
-          <section
-            id="testimonials"
-            className={`border-2 ${
-              isDarkMode ? "border-gray-700" : "border-gray-400"
-            } rounded-md p-8 mb-3`}
-          >
-            <h2 className="text-3xl font-bold mb-6 text-center">
-              Testimonials
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                {
-                  quote:
-                    "I never knew converting files could be so energy-efficient. My electricity bill has never looked better!",
-                  author: "— Person with suspiciously low electricity bill",
-                  image: "/happy-man.jpg",
-                },
-                {
-                  quote:
-                    "The file converter is my precious! It's so easy to use, even a hobbit could do it.",
-                  author: "— Gollum, ring enthusiast",
-                  image: "/gollum.jpg",
-                },
-                {
-                  quote:
-                    "After using this converter, I found a portal to Narnia in my closet. The hosting savings must be magical!",
-                  author: "— Lucy Pevensie, Queen of Narnia",
-                  image: "/queen.jpg",
-                },
-                {
-                  quote:
-                    "After using this converter, I found $20 in my pocket that I didn't know I had. It must be all the money I'm saving on hosting!",
-                  author: "— Satisfied customer",
-                  image: "/happy-girl.jpg",
-                },
-              ].map((testimonial, index) => (
-                <div
-                  key={index}
-                  className={`p-6 border-2 ${
-                    isDarkMode ? "border-gray-700" : "border-gray-400"
-                  } rounded-lg`}
-                >
-                  {testimonial.image && (
-                    <div className="w-24 h-24 mx-auto mb-4 relative">
-                      <Image
-                        src={testimonial.image}
-                        alt="Testimonial"
-                        fill
-                        className="rounded-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <p
-                    className={`text-lg italic mb-4 ${
-                      isDarkMode ? "text-gray-300" : "text-gray-600"
-                    }`}
-                  >
-                    {testimonial.quote}
-                  </p>
+                  <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+                    <span>{feature.title}</span>
+                    <span>{feature.icon}</span>
+                  </h3>
                   <p
                     className={`${
-                      isDarkMode ? "text-gray-300" : "text-gray-600"
-                    } font-semibold`}
+                      isDarkMode ? "text-zinc-300" : "text-zinc-600"
+                    } mb-4`}
                   >
-                    {testimonial.author}
+                    {feature.description}
                   </p>
+                  <ul
+                    className={`list-disc pl-5 ${
+                      isDarkMode ? "text-zinc-400" : "text-zinc-500"
+                    }`}
+                  >
+                    {feature.benefits.map((benefit, index) => (
+                      <li key={index} className="mb-1">
+                        {benefit}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
@@ -438,12 +343,11 @@ export default function Home() {
           <section
             id="faq"
             className={`border-2 ${
-              isDarkMode ? "border-gray-700" : "border-gray-400"
-            } rounded-md p-8 mb-3`}
+              isDarkMode
+                ? "border-zinc-600 bg-zinc-800"
+                : "border-zinc-300 bg-white"
+            } rounded-sm p-8 mb-3 shadow-md`}
           >
-            <h2 className="text-3xl font-bold mb-6 text-center">
-              Frequently Asked Questions
-            </h2>
             <div className="space-y-4">
               {[
                 {
@@ -461,13 +365,13 @@ export default function Home() {
                   question:
                     "Will my SEO rankings be affected by the conversion?",
                   answer:
-                    "When done correctly, converting to Next.js should actually improve your SEO rankings. We maintain all your existing meta tags, URLs, and content structure while leveraging Next.js's superior SEO capabilities like automatic static generation and server-side rendering. We also implement proper redirects and ensure all SEO best practices are followed during the conversion.",
+                    "When done correctly, converting to Next.js should actually improve your SEO rankings. We maintain all your existing meta tags, URLs, and content structure while leveraging Next.js's superior SEO capabilities. We also implement proper greenirects and ensure all SEO best practices are followed during the conversion.",
                 },
                 {
                   question:
                     "What kind of performance improvements can I expect?",
                   answer:
-                    "Next.js sites typically show significant performance improvements over Webflow sites. You can expect faster page load times due to server-side rendering, improved Core Web Vitals scores, better mobile performance, and reduced server costs. Many of our clients see Google PageSpeed scores improve by 20-40 points after conversion.",
+                    "Next.js sites typically show significant performance improvements over Webflow sites. You can expect faster page load times, improved Core Web Vitals scores, better mobile performance, and greenuced server costs. Many of our clients see Google PageSpeed scores improve by 20-40 points after conversion.",
                 },
                 {
                   question:
@@ -478,7 +382,7 @@ export default function Home() {
                 {
                   question: "Is there a size limit for sites you can convert?",
                   answer:
-                    "There's no strict size limit for sites we can convert. We've successfully handled sites ranging from single-page applications to large multi-page websites with hundreds of pages and complex CMS structures. The conversion timeline may vary based on size and complexity, but we'll provide a detailed estimate after reviewing your site.",
+                    "There's no strict size limit for sites we can convert. We've successfully handled sites ranging from single-page applications to large multi-page websites with greens of pages and complex CMS structures. The conversion timeline may vary based on size and complexity, but we'll provide a detailed estimate after reviewing your site.",
                 },
 
                 {
@@ -491,7 +395,7 @@ export default function Home() {
                   question:
                     "Do I need to know Next.js to use the converted project?",
                   answer:
-                    "While having knowledge of Next.js is beneficial, it's not strictly necessary to use the converted project. The basic structure and functionality will be set up for you. However, for further customization, adding new features, or optimizing performance, familiarity with Next.js and React would be advantageous. We provide documentation and support to help you get started with your converted project.",
+                    "While having knowledge of Next.js is beneficial, it's not strictly necessary to use the converted project. The basic structure and functionality will be set up for you. However, for further customization, adding new features, or optimizing performance, familiarity with Next.js would be advantageous. We provide documentation and support to help you get started with your converted project.",
                 },
                 {
                   question:
@@ -503,15 +407,17 @@ export default function Home() {
                   question:
                     "What are the main benefits of converting from Webflow to Next.js?",
                   answer:
-                    "Converting to Next.js offers several advantages: improved performance through server-side rendering and static site generation, better SEO capabilities, the ability to add complex functionality using React, easier integration with APIs and databases, and the flexibility to scale your application as your needs grow. It also opens up a vast ecosystem of React libraries and tools.",
+                    "Converting to Next.js offers several advantages: improved performance through modern rendering techniques, better SEO capabilities, the ability to add complex functionality using Next.js, easier integration with APIs and databases, and the flexibility to scale your application as your needs grow. It also opens up a vast ecosystem of Next.js libraries and tools.",
                 },
               ].map((faq, index) => {
                 return (
                   <div
                     key={index}
                     className={`border-2 ${
-                      isDarkMode ? "border-gray-700" : "border-gray-400"
-                    } rounded-lg overflow-hidden`}
+                      isDarkMode
+                        ? "border-zinc-700 bg-zinc-900"
+                        : "border-zinc-300 bg-zinc-50"
+                    } rounded-lg overflow-hidden shadow-md`}
                   >
                     <button
                       onClick={() =>
@@ -548,7 +454,7 @@ export default function Home() {
                     >
                       <p
                         className={`px-6 pb-6 ${
-                          isDarkMode ? "text-gray-300" : "text-gray-600"
+                          isDarkMode ? "text-zinc-300" : "text-zinc-600"
                         }`}
                       >
                         {faq.answer}
@@ -564,8 +470,10 @@ export default function Home() {
 
         <footer
           className={`border-2 ${
-            isDarkMode ? "border-gray-700" : "border-gray-400"
-          } rounded-md p-4 text-center mb-6`}
+            isDarkMode
+              ? "border-zinc-600 bg-zinc-800"
+              : "border-zinc-300 bg-white"
+          } rounded-sm p-4 text-center mb-6 shadow-md`}
         >
           <div className="flex justify-center items-center gap-4">
             <p>
@@ -575,17 +483,16 @@ export default function Home() {
                 href="https://www.joshmmay.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600"
+                className="text-green-600"
               >
                 Josh May
               </a>
             </p>
+            |
             <button
               onClick={toggleDarkMode}
-              className={`p-2 rounded-md ${
-                isDarkMode
-                  ? "bg-gray-700 text-yellow-300"
-                  : "bg-gray-300 text-gray-700"
+              className={`p-2 rounded-sm ${
+                isDarkMode ? " text-yellow-300" : "text-zinc-700"
               }`}
             >
               {isDarkMode ? "☀️" : "🌙"}
@@ -599,12 +506,12 @@ export default function Home() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
             className={`${
-              isDarkMode ? "bg-gray-800" : ""
-            } p-8 rounded-lg max-w-md relative`}
+              isDarkMode ? "bg-zinc-800" : "bg-white"
+            } p-8 rounded-lg max-w-md relative shadow-xl`}
           >
             <button
               onClick={() => setIsAboutModalOpen(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-700"
             >
               <svg
                 className="w-6 h-6"
@@ -621,7 +528,7 @@ export default function Home() {
               </svg>
             </button>
             <h2 className="text-2xl font-bold mb-4">About This Project</h2>
-            <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
+            <p className={isDarkMode ? "text-zinc-300" : "text-zinc-600"}>
               I built this tool to scratch my own itch. I was trying to convert
               a client&apos;s product page from Webflow to Next.js and
               couldn&apos;t find anything great so... Walaaa! 😊
@@ -631,7 +538,7 @@ export default function Home() {
                 href="https://www.joshmmay.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600"
+                className="text-green-600"
               >
                 Josh May
               </a>
@@ -644,12 +551,12 @@ export default function Home() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
             className={`${
-              isDarkMode ? "bg-gray-800" : ""
-            } p-8 rounded-lg max-w-md relative`}
+              isDarkMode ? "bg-zinc-800" : "bg-white"
+            } p-8 rounded-lg max-w-md relative shadow-xl`}
           >
             <button
               onClick={() => setIsContactModalOpen(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-700"
             >
               <svg
                 className="w-6 h-6"
@@ -666,15 +573,270 @@ export default function Home() {
               </svg>
             </button>
             <h2 className="text-2xl font-bold mb-4">Contact Me</h2>
-            <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
+            <p className={isDarkMode ? "text-zinc-300" : "text-zinc-600"}>
               You can reach me at:{" "}
               <a
                 href="mailto:hey@joshmmay.com"
-                className="text-blue-600 hover:text-blue-700"
+                className="text-green-600 hover:text-green-700"
               >
                 hey@joshmmay.com
               </a>
             </p>
+          </div>
+        </div>
+      )}
+
+      {isSubmitModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div
+            className={`${
+              isDarkMode ? "bg-zinc-800" : "bg-white"
+            } p-12 rounded-lg ${
+              submitModalStep === 1 ? "max-w-2xl" : "max-w-5xl"
+            } w-full relative shadow-xl mx-4`}
+          >
+            <button
+              onClick={() => {
+                setIsSubmitModalOpen(false);
+                setSubmitModalStep(1);
+              }}
+              className="absolute top-6 right-6 text-zinc-500 hover:text-zinc-700"
+            >
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {submitModalStep === 1 ? (
+              <>
+                <h2 className="text-3xl font-bold mb-8">
+                  Where should we send your code?
+                </h2>
+
+                <form onSubmit={handleFormSubmit} className="space-y-6">
+                  <div>
+                    <div className="flex items-center mb-1">
+                      <span className="text-red-500 mr-1">*</span>
+                      <label
+                        className={
+                          isDarkMode ? "text-zinc-300" : "text-zinc-600"
+                        }
+                      >
+                        Name
+                      </label>
+                    </div>
+                    <input
+                      type="text"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      placeholder="Your name..."
+                      required
+                      className={`w-full px-6 py-4 text-lg rounded-sm ${
+                        isDarkMode
+                          ? "bg-zinc-900 border-zinc-700 text-white"
+                          : "bg-white border-zinc-300 text-black"
+                      } border-2 focus:outline-none focus:border-green-600`}
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center mb-1">
+                      <span className="text-red-500 mr-1">*</span>
+                      <label
+                        className={
+                          isDarkMode ? "text-zinc-300" : "text-zinc-600"
+                        }
+                      >
+                        Email
+                      </label>
+                    </div>
+                    <input
+                      type="email"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      placeholder="Your email..."
+                      required
+                      className={`w-full px-6 py-4 text-lg rounded-sm ${
+                        isDarkMode
+                          ? "bg-zinc-900 border-zinc-700 text-white"
+                          : "bg-white border-zinc-300 text-black"
+                      } border-2 focus:outline-none focus:border-green-600`}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-green-700 text-white px-8 py-4 text-lg rounded-sm font-semibold hover:bg-green-800"
+                  >
+                    Submit
+                  </button>
+                </form>
+              </>
+            ) : (
+              <>
+                <h2 className="text-3xl font-bold mb-8">Select Your Package</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div
+                    className={`p-6 border-2 rounded-lg ${
+                      isDarkMode
+                        ? "border-zinc-700 bg-zinc-900"
+                        : "border-zinc-300 bg-zinc-50"
+                    } flex flex-col h-full`}
+                  >
+                    <div className="mb-4">
+                      <h3 className="text-2xl font-bold mb-2">
+                        Single Page Conversion
+                      </h3>
+                      <div className="mb-4">
+                        <span className="text-3xl font-bold text-green-600">
+                          $39
+                        </span>
+                        <span
+                          className={`ml-2 ${
+                            isDarkMode ? "text-zinc-400" : "text-zinc-600"
+                          }`}
+                        >
+                          one-time payment
+                        </span>
+                      </div>
+                      <p
+                        className={`mb-6 ${
+                          isDarkMode ? "text-zinc-300" : "text-zinc-600"
+                        }`}
+                      >
+                        Perfect for landing pages or simple websites
+                      </p>
+                    </div>
+
+                    <div className="mb-6 flex-grow">
+                      <ul className="space-y-3">
+                        {[
+                          "One page conversion",
+                          "SEO optimization",
+                          "Fast delivery",
+                          "Clean code",
+                          "Modern Next.js best practices",
+                        ].map((feature) => (
+                          <li key={feature} className="flex items-center">
+                            <svg
+                              className="w-5 h-5 mr-2 text-green-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span
+                              className={
+                                isDarkMode ? "text-zinc-300" : "text-zinc-600"
+                              }
+                            >
+                              {feature}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <a
+                      href="https://buy.stripe.com/bIYdSka6p3KQ22IeUW"
+                      className="block w-full bg-green-600 text-white text-center px-6 py-4 rounded-sm hover:bg-green-700 transition-colors font-semibold"
+                    >
+                      Get Started
+                    </a>
+                  </div>
+
+                  <div
+                    className={`p-6 border-2 rounded-lg ${
+                      isDarkMode
+                        ? "border-zinc-700 bg-zinc-900"
+                        : "border-zinc-300 bg-zinc-50"
+                    } flex flex-col h-full`}
+                  >
+                    <div className="mb-4">
+                      <h3 className="text-2xl font-bold mb-2">
+                        Multiple Pages
+                      </h3>
+                      <div className="mb-4">
+                        <span className="text-3xl font-bold text-green-600">
+                          Custom
+                        </span>
+                        <span
+                          className={`ml-2 ${
+                            isDarkMode ? "text-zinc-400" : "text-zinc-600"
+                          }`}
+                        >
+                          based on project scope
+                        </span>
+                      </div>
+                      <p
+                        className={`mb-6 ${
+                          isDarkMode ? "text-zinc-300" : "text-zinc-600"
+                        }`}
+                      >
+                        For larger websites and complex projects
+                      </p>
+                    </div>
+
+                    <div className="mb-6 flex-grow">
+                      <ul className="space-y-3">
+                        {[
+                          "Multiple page conversion",
+                          "Priority support",
+                          "Performance optimization",
+                          "Integration support",
+                        ].map((feature) => (
+                          <li key={feature} className="flex items-center">
+                            <svg
+                              className="w-5 h-5 mr-2 text-green-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span
+                              className={
+                                isDarkMode ? "text-zinc-300" : "text-zinc-600"
+                              }
+                            >
+                              {feature}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <a
+                      href="https://forms.gle/pU4meTYcVE51iHkr7"
+                      className="block w-full bg-green-600 text-white text-center px-6 py-4 rounded-sm hover:bg-green-700 transition-colors font-semibold"
+                    >
+                      Contact for Quote
+                    </a>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
