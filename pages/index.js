@@ -51,8 +51,22 @@ export default function Home() {
     }
   };
 
+  const gtag_report_conversion = () => {
+    // @ts-ignore
+    window.gtag("event", "conversion", {
+      send_to: "AW-11533978192/TzKUCJ-zloAaENCU6vsq",
+      value: 1.0,
+      currency: "USD",
+    });
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
+
+    // Track the conversion when moving to step 2
+    gtag_report_conversion();
+
+    // Your existing logic to change the step
     setSubmitModalStep(2);
   };
 
