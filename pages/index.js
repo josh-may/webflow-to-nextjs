@@ -411,7 +411,7 @@ export default function Home() {
                 {
                   question: "Is my Webflow site too complex to convert?",
                   answer:
-                    "We've successfully converted a wide range of Webflow sites, from simple landing pages to complex multi-page applications. Our conversion process can handle custom animations, interactions, CMS integrations, and complex layouts. If your site has any particularly unique features, we'll assess them during our initial review and communicate any specific considerations.",
+                    "We've successfully converted a wide range of Webflow sites, from simple landing pages to complex multi-page applications. If your site has any particularly unique features, we'll assess them during our initial review and communicate any specific considerations.",
                 },
                 {
                   question:
@@ -429,7 +429,7 @@ export default function Home() {
                   question:
                     "What happens to my Webflow interactions and animations?",
                   answer:
-                    "We carefully recreate all your Webflow interactions and animations in Next.js using modern animation libraries like Framer Motion or GSAP. In many cases, we can even improve the performance and smoothness of these animations. Complex interactions are thoroughly tested to ensure they match or exceed the original Webflow implementation.",
+                    "Currently, we do not support converting Webflow animations and interactions. The converted site will maintain your static design and layout, but any animations or interactive elements will need to be recreated manually using Next.js animation libraries like Framer Motion or GSAP. We recommend working with a Next.js developer to implement these animations after conversion.",
                 },
                 {
                   question: "Is there a size limit for sites you can convert?",
