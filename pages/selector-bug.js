@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+import { getParsedHTMLText } from "../utils/getParsedHTMLText";
+import { getParsedHtmlSelectors } from "../utils/getParsedHtmlSelectors";
 import { getHtmlChild } from "../utils/getHtmlChild";
+import { getParsedComponentHTML } from "../utils/nodeHtmlParser";
 import Link from "next/link";
 
 export default function Home() {
@@ -38,19 +41,16 @@ export default function Home() {
     return html;
   };
 
-  const getParenElement = async (htmlChild) => {
+  const getComponentsNumber = async (pageHTML) => {
+    console.log("getComponentsNumber...");
+
+    const parsedHTMLText = getParsedHTMLText(pageHTML);
+
     try {
-      const prompt = `Read the website HTML and return the CSS selector of the first html element that contains sibling elements. The result will either be the body or an html element close to it. Only return the result without any explanation. 
-
-The result should be returned like this:
-#__next > div > main
-body
-#main
-...
-
-website HTML:
-${htmlChild}
-`;
+      const prompt = `Analyze the HTML and identify the main website components (banner, header, hero, reviews...). Return an array of strings like this ["banner", "header", "hero", "reviews"]. Only output the array result without any explanation. 
+        
+HTML to analyze:
+${parsedHTMLText}`;
 
       const anthropicResponse = await fetch("/api/anthropic-text", {
         method: "POST",
@@ -67,42 +67,77 @@ ${htmlChild}
       }
 
       const data = await anthropicResponse.json();
-      return data.result;
+      const components = JSON.parse(data.result);
+      return components.length;
     } catch (error) {
-      console.error("Error in findCoreHtmlComponents:", error);
+      console.error(error);
       throw error;
     }
   };
 
-  const getSiblingArr = async (htmlChild, parenElement) => {
-    console.log("getSiblingArr...");
+  const getComponentSelectors = async (pageHTML, componentNames) => {
+    console.log("getComponentSelectors...");
+    const parsedHtmlSelectors = getParsedHtmlSelectors(pageHTML);
+
+    console.log("parsedHtmlSelectors");
+    console.log(parsedHtmlSelectors);
+
+    const results = [];
+
     try {
-      const prompt = `Read the HTML below and create an array of all the CSS Selectors of the sibling html elements under this parent element "${parenElement}". Return only the result without any explanation. 
+      for (const componentName of componentNames) {
+        const prompt = `Analyze the HTML and identify the opening CSS selector for the ${componentName} component. Return an object like this:
 
-Here are some example of what im looking for:
-[
-  "#root > div.flex.flex-col.min-h-screen.overflow-hidden > main > section.bg-white.dark\\:bg-gray-900",
-  "#root > div.flex.flex-col.min-h-screen.overflow-hidden > main > section:nth-child(2)",
-  ...
-]
+    {
+      "name": "${componentName}",
+      "selector": "ADD SELECTOR HERE"
+    }
 
-[
-  "#__next > div > div > div.grid-item.css-1ccnjsp",
-  "#__next > div > div > div:nth-child(2)",
-  "#__next > div > div > div.grid-item.css-1qjwwd4",
-  "#__next > div > div > div:nth-child(4)",
-  ...
-]
+    Only output the JSON object without any explanation.
 
-[
-  "#__next > div > main > header",
-  "#__next > div > main > section.w-full.mb-4.sm\:mb-6",
-  "#meeting-info",
-  ...
-]
-      
-${htmlChild}
-`;
+    HTML to analyze:
+    ${parsedHtmlSelectors}`;
+
+        console.log("prompt");
+        console.log(prompt);
+
+        const anthropicResponse = await fetch("/api/anthropic-text", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+          }),
+        });
+
+        if (!anthropicResponse.ok) {
+          throw new Error(`Failed to analyze HTML for ${componentName}`);
+        }
+
+        const data = await anthropicResponse.json();
+        const result = JSON.parse(data.result);
+        results.push(result);
+      }
+
+      return results;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const getCoreComponents = async (parsedHTML) => {
+    console.log("getCoreComponents...");
+    try {
+      const prompt = `Analyze the HTML and identify the main website components (banner, navigation, hero, reviews...). Return a JSON array of objects, where each object has name and selector. Only return the JSON array, no other text.  Example format:
+  [
+  {"name": "header", "selector": ".site-header"},
+  {"name": "hero", "selector": ".hero-section"}
+  ]
+  
+  HTML to analyze:
+  ${parsedHTML}`;
 
       const anthropicResponse = await fetch("/api/anthropic-text", {
         method: "POST",
@@ -113,71 +148,62 @@ ${htmlChild}
           prompt: prompt,
         }),
       });
-
       if (!anthropicResponse.ok) {
         throw new Error("Failed to analyze HTML");
       }
-
       const data = await anthropicResponse.json();
-      return data.result;
-    } catch (error) {
-      console.error("Error in findCoreHtmlComponents:", error);
-      throw error;
-    }
-  };
 
-  const getPageScreenshots = async (url) => {
-    try {
-      const testSelector = "#__next > div > main > section.w-full.mb-4.sm:mb-6";
+      const components = JSON.parse(data.result);
 
-      const response = await fetch("/api/take-screenshot", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cssSelector: testSelector,
-          url,
-        }),
+      const parsedComponentHTML = getParsedComponentHTML(parsedHTML);
+      const componentsWithHTML = components.map((component) => {
+        const element = parsedComponentHTML.querySelector(component.selector);
+        return {
+          ...component,
+          html: element ? element.toString() : "",
+        };
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.warn(`Failed to capture screenshot: ${data.error}`);
-        return null;
-      }
-
-      console.log(data.imageUrl);
-
-      return {
-        selector: testSelector,
-        imageUrl: data.imageUrl,
-      };
+      return componentsWithHTML;
     } catch (error) {
-      console.error("Screenshot error:", error);
+      console.error(error);
       throw error;
     }
   };
 
   const handleSubmit = async () => {
-    console.log("handleSubmit...");
     if (!url) return;
     setIsLoading(true);
+    console.log("handleSubmit...");
 
     try {
-      // const pageHTML = await scrapePageHTML(url);
-      // const htmlChild = await getHtmlChild(pageHTML);
-      // const parenElement = await getParenElement(htmlChild);
-      // const siblingArr = await getSiblingArr(htmlChild, parenElement);
+      const pageHTML = await scrapePageHTML(url);
 
-      // Updated to use simplified version
-      const screenshot = await getPageScreenshots(url);
+      const htmlChild = getHtmlChild(pageHTML);
+      console.log("htmlChild");
+      console.log(htmlChild);
 
-      console.log("✅ complete");
+      // const componentNumber = await getComponentsNumber(pageHTML);
+      // const componentSelectors = await getComponentSelectors(
+      //   pageHTML,
+      //   componentNames
+      // );
+
+      // const parsedHtmlSelectors = getParsedHtmlSelectors(pageHTML);
+      // console.log("parsedHtmlSelectors");
+      // console.log(parsedHtmlSelectors);
+
+      // const parsedHTMLText = getParsedHTMLText(pageHTML);
+      // console.log("parsedHTMLText");
+      // console.log(parsedHTMLText);
+
+      // findComponentCssSelector - parse html, loop over each component found in the array, find the CSS selector of that component
+
+      // const coreComponents = await getCoreComponents(parsedHTML);
+
+      console.log("handleSubmit complete");
     } catch (error) {
-      console.error("❌ handleSubmit");
-      console.error(error);
+      console.error("❌ Error in handleSubmit:", error);
     }
 
     setIsLoading(false);
@@ -189,9 +215,9 @@ ${htmlChild}
         isDarkMode ? "bg-gray-950 text-white" : "bg-gray-100 text-black"
       }`}
     >
-      {/* INPUT */}
       <div className="max-w-6xl min-w-6xl mx-auto w-full flex-1">
-        <div className="min-h-[calc(100vh+200px)] mt-10">
+        <div className="min-h-[calc(100vh+200px)]">
+          {/* INPUT */}
           <div
             className={`border-2 ${
               isDarkMode
@@ -229,7 +255,7 @@ ${htmlChild}
         </div>
       </div>
 
-      {/* FOOTER */}
+      {/* Footer - Removed from flex container */}
       <footer
         className={`py-4 text-center mt-auto ${
           isDarkMode ? "bg-gray-950" : "bg-gray-100"
