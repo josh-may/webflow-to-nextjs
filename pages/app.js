@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
-import { getHtmlChild } from "../utils/getHtmlChild";
+
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/");
+  }, [router]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
