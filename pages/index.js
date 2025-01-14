@@ -230,13 +230,13 @@ export default function Home() {
                   step: "1",
                   title: "Submit Your URL",
                   description:
-                    "Enter your Webflow site URL and provide your contact details. Our system will immediately begin analyzing your site's structure, components, and interactions to prepare for conversion.",
+                    "Enter your Webflow URL and provide your contact details. Our system will immediately begin analyzing your web page, components, and interactions to prepare for conversion.",
                 },
                 {
                   step: "2",
                   title: "Automated Conversion",
                   description:
-                    "Our system analyzes your site and converts it to Next.js code. We handle everything from component creation to styling, animations, and responsive layouts while maintaining your design's pixel-perfect accuracy.",
+                    "Our system analyzes your web page and converts it to Next.js code. We handle everything from component creation to styling, and responsive layouts while maintaining your design.",
                 },
                 {
                   step: "3",
@@ -430,11 +430,6 @@ export default function Home() {
                     "What happens to my Webflow interactions and animations?",
                   answer:
                     "Currently, we do not support converting Webflow animations and interactions. The converted site will maintain your static design and layout, but any animations or interactive elements will need to be recreated manually using Next.js animation libraries like Framer Motion or GSAP. We recommend working with a Next.js developer to implement these animations after conversion.",
-                },
-                {
-                  question: "Is there a size limit for sites you can convert?",
-                  answer:
-                    "There's no strict size limit for sites we can convert. We've successfully handled sites ranging from single-page applications to large multi-page websites with greens of pages and complex CMS structures. The conversion timeline may vary based on size and complexity, but we'll provide a detailed estimate after reviewing your site.",
                 },
 
                 {
