@@ -411,7 +411,7 @@ export default function Home() {
                 {
                   question: "Is my Webflow site too complex to convert?",
                   answer:
-                    "We've successfully converted a wide range of Webflow sites, from simple landing pages to complex multi-page applications. If your site has any particularly unique features, we'll assess them during our initial review and communicate any specific considerations.",
+                    "We've successfully converted a wide range of Webflow sites. Single page conversion is available for $39. For multi-page applications or sites with unique features, please reach out to webflowtojsx@joshmmay.com for a custom quote. We'll assess your specific needs and provide detailed pricing.",
                 },
                 {
                   question:
