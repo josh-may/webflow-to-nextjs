@@ -32,7 +32,7 @@ export default function Home() {
 
     gtag_report_conversion();
 
-    window.open("https://buy.stripe.com/bIYdSka6p3KQ22IeUW", "_blank");
+    window.open("https://webflowtonextjsconverter.com/", "_blank");
   };
 
   const handleInputSubmit = (e) => {
@@ -41,7 +41,7 @@ export default function Home() {
 
       gtag_report_conversion();
 
-      window.open("https://buy.stripe.com/bIYdSka6p3KQ22IeUW", "_blank");
+      window.open("https://webflowtonextjsconverter.com/", "_blank");
     }
   };
 
