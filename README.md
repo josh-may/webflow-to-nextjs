@@ -22,13 +22,6 @@ A powerful tool that automatically converts Webflow websites into optimized Next
 - A published Webflow site
 - Valid Webflow URL (ending in .webflow.io or .webflow.com)
 
-## Support
-
-For support or custom requirements, please contact:
-
-- Email: hey@joshmmay.com
-- Website: [joshmmay.com](https://www.joshmmay.com)
-
 ## Limitations
 
 Currently, the converter does not support:
